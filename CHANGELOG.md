@@ -1,5 +1,68 @@
 # CHANGELOG
 
+### [v2.6 _(Jan 15, 2019)_](https://github.com/omise/omise-magento/releases/tag/v2.6)
+
+### 👾 Bug Fixes
+- Model\Ui\CapabilitiesConfigProvider: returns an empty array instaed of null when Installment payment method is disabled. (PR [#174](https://github.com/omise/omise-magento/pull/174))
+
+### [v2.5 _(Jan 14, 2019)_](https://github.com/omise/omise-magento/releases/tag/v2.5)
+
+### ✨ Highlights
+- Introducing support Installment Payments (PR [#148](https://github.com/omise/omise-magento/pull/148))
+
+### 🚀 Enhancements
+- Enable Place Order button on Internet Banking checkout option only if bank is selected. (PR [#166](https://github.com/omise/omise-magento/pull/166))
+- Restrict Tesco Bill Payment to THB transactions only (PR [#165](https://github.com/omise/omise-magento/pull/165))
+- Tesco Bill Payment added PRINT button (PR [#164](https://github.com/omise/omise-magento/pull/164))
+- Restrict internet banking payment method to THB orders only(PR [#161](https://github.com/omise/omise-magento/pull/161))
+- Send Tesco barcode to customer's email. (PR [#158](https://github.com/omise/omise-magento/pull/158))
+- Make plugin compatible with PHP 7.2 (PR [#168](https://github.com/omise/omise-magento/pull/168))
+
+### 👾 Bug Fixes
+- Fix for showing Tesco Bill Payment related information on checkout success page when using other payment methods (PR [#163](https://github.com/omise/omise-magento/pull/163))
+- Fix for missing "Terms and Conditions" in Alipay and Tesco payment method. (PR [#162](https://github.com/omise/omise-magento/pull/162))
+- Fixed problem that translation to 'Select a card you want to proceed (PR [#160](https://github.com/omise/omise-magento/pull/160))
+- Fix compilation error in Capabilities API (PR [#171](https://github.com/omise/omise-magento/pull/171))
+
+### [v2.4 _(Oct 2, 2018)_](https://github.com/omise/omise-magento/releases/tag/2.4)
+
+### ✨ Highlights
+- Save Credit Card (PR [#123](https://github.com/omise/omise-magento/pull/123))
+- Introducing support of Tesco Lotus Payment (PR[#140](https://github.com/omise/omise-magento/pull/140))
+
+### 🚀 Enhancements
+- Force plugin to use newest Omise Api v2017-11-02 (PR [#133](https://github.com/omise/omise-magento/pull/133))
+- Code Refactoring, prepare plugin for future payment methods (PR [#130](https://github.com/omise/omise-magento/pull/130), PR [#131](https://github.com/omise/omise-magento/pull/131), PR [#134](https://github.com/omise/omise-magento/pull/134), PR [#137](https://github.com/omise/omise-magento/pull/137), PR [#138](https://github.com/omise/omise-magento/pull/138), PR [#149](https://github.com/omise/omise-magento/pull/149), PR [#153](https://github.com/omise/omise-magento/pull/153))
+- Move plugin information in admin panel to 'recommended' section (PR [#129](https://github.com/omise/omise-magento/pull/129))
+- Restrict Alipay for THB transactions only (PR [#127](https://github.com/omise/omise-magento/pull/127))
+- Changed `composer.json` to fulfil requirements from Magento Market Store (PR [#132](https://github.com/omise/omise-magento/pull/132))
+
+### 👾 Bug Fixes
+- Fix for not working webhooks due to script compilation error (PR [#141](https://github.com/omise/omise-magento/pull/141)).
+- Fix typo on a classname and filename (PR [#135](https://github.com/omise/omise-magento/pull/135))
+- Fix for wrong spelling in Admin Panel (PR [#136](https://github.com/omise/omise-magento/pull/136))
+
+### [v2.3 _(Jun 20, 2018)_](https://github.com/omise/omise-magento/releases/tag/v2.3)
+
+#### ✨ Highlights
+
+- Introducing support of Alipay payments (PR [#113](https://github.com/omise/omise-magento/pull/113))
+- Support for Multistore Magento 2 configuration (PR [#117](https://github.com/omise/omise-magento/pull/117))
+- Simplify plugin installation process by using composer (PR [#112](https://github.com/omise/omise-magento/pull/112))
+- Introduce Webhook feature  (PR [#107](https://github.com/omise/omise-magento/pull/107))
+
+#### 🚀 Enhancements
+
+- Removed IDR currency support (PR [#122](https://github.com/omise/omise-magento/pull/122))
+- Updates config to apply Magento docs recommendations (PR [#120](https://github.com/omise/omise-magento/pull/120))
+- Removes link/dependency with Authorize.net module (PR [#118](https://github.com/omise/omise-magento/pull/118))
+- Removes specific fee warnings for Internet Banking + improve i18n (PR [#114](https://github.com/omise/omise-magento/pull/114))
+- Introduce API Object model structure and refactoring code (PR [#103](https://github.com/omise/omise-magento/pull/103))
+
+### 👾 Bug Fixes
+- Internet Banking: Proper set the order status if the returned charge status is set to 'pending' (PR [#105](https://github.com/omise/omise-magento/pull/105))
+- Removed unused files (PR [#106](https://github.com/omise/omise-magento/pull/106))
+
 ### [v2.2 _(Nov 02, 2017)_](https://github.com/omise/omise-magento/releases/tag/v2.2)
 
 #### 🚀 Enhancements

@@ -1,4 +1,4 @@
-<p align="center"><a href='https://www.omise.co'><img src='https://assets.omise.co/assets/omise-logo-ed530feda8c7bf8b0c990d5e4cf8080a0f23d406fa4049a523ae715252d0dc54.svg' height='60'></a></p>
+<p align="center"><a href='https://www.omise.co'><img src='https://cloud.githubusercontent.com/assets/2154669/26388730/437207e4-4080-11e7-9955-2cd36bb3120f.png' height='160'></a></p>
 
 **Omise Magento** is the official payment extension which provides support for Omise payment gateway for store builders working on the Magento platform.
 
@@ -7,7 +7,7 @@
 Our aim is to support as many versions of Magento as we can.  
 
 **Here's the list of versions we tested on:**
-- Magento (CE) 2.1.5, tested on PHP 7.0.16.
+- Magento (CE) 2.2.4, tested on PHP 7.0.29.
 
 To report problems for the version you're using, feel free to submit the issue through [GitHub's issue channel](https://github.com/omise/omise-magento/issues) by following the [Reporting the issue Guideline](https://guides.github.com/activities/contributing-to-open-source/#contributing).
 
@@ -22,21 +22,21 @@ Submit your requirement as an issue to [https://github.com/omise/omise-magento/i
 
 ### Installation Instructions
 
-#### Manually
+#### Via Composer
 
-The steps below shows how to install the module manually.
-This requires a user account with permission to write your Magento file system, execute the command line and [composer](https://getcomposer.org).
+Installing the extension is done via [composer](https://getcomposer.org/). Simply run the following command in the Magento root folder:
 
-1. Download and extract the zip file from [Omise-Magento](https://github.com/omise/omise-magento/archive/v2.2.zip).
-2. On your Magento server, create a new folder `Omise/Payment` under the directory `app/code`.
-3. Copy all files to the directory `app/code/Omise/Payment` that you created in the step 2.
-    <p align="center"><a alt="omise-magento-install-manual-01" href='https://cloud.githubusercontent.com/assets/2154669/21450750/247ec3b6-c92c-11e6-92d5-3c036568f20b.png'><img src='https://cloud.githubusercontent.com/assets/2154669/21450750/247ec3b6-c92c-11e6-92d5-3c036568f20b.png'></a></p>
-4. Log in to your Magento server by using Terminal program, then change the current directory to your Magento root directory.
-5. Execute command `composer require omise/omise-php:2.8.0` to install Omise-PHP library.
-6. Execute `php bin/magento module:enable Omise_Payment --clear-static-content` to register `Omise_Payment` plugin to the Magento module system.
-    <img width="1074" alt="024" src="https://cloud.githubusercontent.com/assets/2154669/24037678/30c1f070-0b31-11e7-878b-b5a052f9a8ea.png">
-7. Then, execute the command, `php bin/magento setup:upgrade` to upgrade your Magento system (to install Omise-Magento plugin).
-8. Your installation is now completed. Check the [First Time Setup](https://github.com/omise/omise-magento#first-time-setup) to continue setting up your Omise account to Magento store.
+<pre>
+composer require "omise/omise-magento:@stable"
+</pre>
+
+Once this is done, run the following commands:
+
+<pre>
+php bin/magento module:enable Omise_Payment --clear-static-content
+php bin/magento setup:upgrade
+php bin/magento setup:di:compile
+</pre>
 
 ### First Time Setup
 
@@ -47,27 +47,68 @@ After installing, you can configure the module by:
 
 Settings is displayed under the `Omise` section.
 
-<p align="center"><a alt="omise-magento-install-manual-04" href='https://cloud.githubusercontent.com/assets/2154669/21477670/9918e2b4-cb76-11e6-8b8d-74ec746b7812.png'><img src='https://cloud.githubusercontent.com/assets/2154669/21477670/9918e2b4-cb76-11e6-8b8d-74ec746b7812.png'></a></p>
+<p align="center"><a alt="omise-magento-install-manual-04" href='https://user-images.githubusercontent.com/10651523/51095402-15ac2c00-17e7-11e9-8ee2-b2122ccf5401.png'><img src='https://user-images.githubusercontent.com/10651523/51095402-15ac2c00-17e7-11e9-8ee2-b2122ccf5401.png'></a></p>
 
 The table below is the settings for the module and the description for each setting.
 
 | Setting             | Description                                                                                                             |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Enable/Disable      | Enables or disables 'Omise Payment Module'                                                                              |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------- |                                                                            
 | Sandbox             | If selected, all transactions will be performed in TEST mode and TEST keys will be used                                 |
 | Public key for test | Your TEST public key can be found in your Dashboard.                                                                    |
 | Secret key for test | Your TEST secret key can be found in your Dashboard.                                                                    |
 | Public key for live | Your LIVE public key can be found in your Dashboard.                                                                    |
 | Secret key for live | Your LIVE secret key can be found in your Dashboard.                                                                    |
-| Payment Action      | Set `Authorize Only` to only authorize a payment or `Authorize and Capture` to automatically capture after authroizing. |
-| Title               | Title of Omise Payment gateway shown at checkout.                                                                       |
+| Webhook for endpoint | Read-only url to enable post order payment notifications. See [Webhooks](https://www.omise.co/api-webhooks) article.      |
 
-- To enable the module, select the setting for `Enable/Disable` to `Yes`.
+
 - To enable `sandbox` mode, select the setting for `Sandbox` to `Yes`.
 
 **Note:**
 
 If the setting for `Sandbox` is set to `Yes`, the keys for TEST will be used. If the setting for `Sandbox` is set to `No`, the keys for LIVE will be used.
+
+**Credit Card Solution**  
+Available options:
+
+| Setting             | Description     |
+| ---------- | ---------------------------------- |                                                                            
+| Enable/Disable | Enables or disables 'Credit Card Payment method' | 
+| Payment Action | Set `Authorize Only` to only authorize a payment or `Authorize and Capture` to automatically capture payment after authorising. |
+| Title | Payment Title displayed during checkout |
+| 3-D Secure Support | Enable or disable support for additional Credit Card payment authorization |
+
+**Internet Banking Solution**  
+Available options:
+
+| Setting             | Description   |
+| --------- | --------------------------- |                                                                            
+| Enable/Disable | Enables or disables 'Internet Banking Payment method'|
+| Title | Payment Title displayed during checkout |
+
+
+**Alipay Payment Solution**  
+Available options:
+
+| Setting             | Description  |
+| ------------ | --------------------------------- |                                                                            
+| Enable/Disable | Enables or disables 'Alipay Payment method'|
+| Title |Payment Title displayed during checkout |
+
+**Tesco Bill Payment Solution**  
+Available options:
+
+| Setting             | Description  |
+| ------------ | --------------------------------- |                                                                            
+| Enable/Disable | Enables or disables 'Tesco Bill Payment method'|
+| Title |Payment Title displayed during checkout |
+
+**Installment Payment Solution**  
+Available options:
+
+| Setting             | Description  |
+| ------------ | --------------------------------- |                                                                            
+| Enable/Disable | Enables or disables 'Installment Payment method'|
+| Title |Payment Title displayed during checkout |
 
 ## Contributing
 

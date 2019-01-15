@@ -23,6 +23,11 @@ class PaymentDataBuilder implements BuilderInterface
     const DESCRIPTION = 'description';
 
     /**
+     * @var string
+     */
+    const METADATA = 'metadata';
+
+    /**
      * @param \Omise\Payment\Helper\OmiseHelper $omiseHelper
      */
     public function __construct(OmiseHelper $omiseHelper)
@@ -40,10 +45,20 @@ class PaymentDataBuilder implements BuilderInterface
         $payment = SubjectReader::readPayment($buildSubject);
         $order   = $payment->getOrder();
 
+        $store_id = $order->getStoreId();
+        $om = \Magento\Framework\App\ObjectManager::getInstance();
+        $manager = $om->get('Magento\Store\Model\StoreManagerInterface');
+        $store_name = $manager->getStore($store_id)->getName();
+
         return [
             self::AMOUNT      => $this->omiseHelper->omiseAmountFormat($order->getCurrencyCode(), $order->getGrandTotalAmount()),
             self::CURRENCY    => $order->getCurrencyCode(),
             self::DESCRIPTION => 'Magento 2 Order id ' . $order->getOrderIncrementId(),
+            self::METADATA    => [
+                'order_id' => $order->getOrderIncrementId(),
+                'store_id' => $order->getStoreId(),
+                'store_name' => $store_name
+            ]
         ];
     }
 }

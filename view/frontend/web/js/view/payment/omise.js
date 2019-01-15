@@ -23,6 +23,28 @@ define(
             }
         );
 
+        rendererList.push(
+            {
+                type: 'omise_offsite_alipay',
+                component: 'Omise_Payment/js/view/payment/method-renderer/omise-offsite-alipay-method'
+            }
+        );
+
+        rendererList.push(
+            {
+                type: 'omise_offsite_installment',
+                component: 'Omise_Payment/js/view/payment/method-renderer/omise-offsite-installment-method'
+            }
+        );
+
+        
+        rendererList.push(
+            {
+                type: 'omise_offline_tesco',
+                component: 'Omise_Payment/js/view/payment/method-renderer/omise-offline-tesco-method'
+            }
+        );
+
         return Component.extend({});
     }
 );
