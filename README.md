@@ -72,7 +72,7 @@ Available options:
 
 | Setting             | Description     |
 | ---------- | ---------------------------------- |                                                                            
-| Enable/Disable | Enables or disables 'Credit Card Payment method' | 
+| Enable/Disable | Enables or disables 'Credit Card Payment method' |
 | Payment Action | Set `Authorize Only` to only authorize a payment or `Authorize and Capture` to automatically capture payment after authorising. |
 | Title | Payment Title displayed during checkout |
 | 3-D Secure Support | Enable or disable support for additional Credit Card payment authorization |
@@ -109,6 +109,89 @@ Available options:
 | ------------ | --------------------------------- |                                                                            
 | Enable/Disable | Enables or disables 'Installment Payment method'|
 | Title |Payment Title displayed during checkout |
+
+
+### Bongloy integration
+
+To integrate with Bongloy API, you just clone this repository to your plugins folder or use the original Omise WooCommerce and change some code such as:
+
+In file `view/frontend/web/js/view/payment/method-renderer/omise-cc-method.js`
+
+```diff
+- if(Omise){
+-   Omise.setPublicKey(omise_params.key);
+-   Omise.createToken("card", card, function (statusCode, response) {
+-     if (statusCode == 200) {
++ if(Bongloy){
++   Bongloy.setPublicKey(omise_params.key);
++   Bongloy.createToken("card", card, function (statusCode, response) {
++     if (statusCode == 201) {
+
+- if (typeof Omise === 'undefined') {
++ if (typeof Bongloy === 'undefined') {
+```
+
+`view/frontend/layout/checkout_index_index.xml`
+
+```diff
+- <script src="https://cdn.omise.co/omise.js.gz" src_type="url" />
++ <script src="https://js.bongloy.com/v3" src_type="url" />
+```
+
+`etc/frontend/di.xml` comment out this line
+
+```diff
+- <item name="omise_capabilities_config_provider" xsi:type="object">Omise\Payment\Model\Ui\CapabilitiesConfigProvider</item>
++ <!-- <item name="omise_capabilities_config_provider" xsi:type="object">Omise\Payment\Model\Ui\CapabilitiesConfigProvider</item> -->
+```
+
+`Model/Api/Charge.php`
+
+```diff
+- return $this->status === 'successful' && $this->isPaid();
++ return $this->status === 'succeeded' && $this->isPaid();
+```
+
+`Gateway/Response/PaymentDetailsHandler.php`
+
+```diff
+- $payment->setAdditionalInformation('payment_type', $response['charge']->source['type']);
++ /* $payment->setAdditionalInformation('payment_type', $response['charge']->source['type']); */
+
+- if ($response['charge']->source['type'] === 'bill_payment_tesco_lotus') {
+-     $barcode = $this->downloadTescoBarcode($response['charge']->source['references']['barcode']);
+-     $payment->setAdditionalInformation('barcode', $barcode);
+- }
++ /* if ($response['charge']->source['type'] === 'bill_payment_tesco_lotus') { */
++     /* $barcode = $this->downloadTescoBarcode($response['charge']->source['references']['barcode']); */
++     /* $payment->setAdditionalInformation('barcode', $barcode); */
++ /* } */
+```
+
+`Gateway/Request/CreditCardBuilder.php`
+
+```diff
+- const CARD      = 'card';
++ const CARD      = 'source';
+```
+
+You can check full commit diff here [320db6c](https://github.com/phannaly/bongloy-magento/commit/320db6c5cb00cf16f1d1cd3da8caf55aecaabf1b)
+
+The last one you have to override
+`vendor/omise/omise-php/lib/omise/res/OmiseApiResource.php` to change endpoint from Omise to Bongloy in your magento main project directory
+
+```diff
+- define('OMISE_API_URL', 'https://api.omise.co/');
++ define('OMISE_API_URL', 'https://api.bongloy.com/v1/');
+```
+
+If you face this problem
+```
+SSL certificate problem: unable to get local issuer certificate
+```
+You can download new certificate http://curl.haxx.se/ca/cacert.pem and replace it in your magento project directory
+`vendor/omise/omise-php/data/ca_certificates.pem`
+
 
 ## Contributing
 
