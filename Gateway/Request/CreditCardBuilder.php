@@ -10,7 +10,7 @@ class CreditCardBuilder implements BuilderInterface
     /**
      * @var string
      */
-    const CARD      = 'card';
+    const CARD      = 'source';
     const CUSTOMER  = 'customer';
     const CHARGE_ID = 'charge_id';
 

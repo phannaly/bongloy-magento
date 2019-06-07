@@ -152,7 +152,7 @@ class Charge extends BaseObject
      */
     public function isSuccessful()
     {
-        return $this->status === 'successful' && $this->isPaid();
+        return $this->status === 'succeeded' && $this->isPaid();
     }
 
     /**

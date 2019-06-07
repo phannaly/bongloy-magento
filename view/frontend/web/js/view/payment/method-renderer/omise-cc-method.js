@@ -187,9 +187,9 @@ define(
                     security_code    : this.omiseCardSecurityCode()
                 };
 
-                Omise.setPublicKey(this.getPublicKey());
-                Omise.createToken('card', card, function(statusCode, response) {
-                    if (statusCode === 200) {
+                Bongloy.setPublicKey(this.getPublicKey());
+                Bongloy.createToken('card', card, function(statusCode, response) {
+                    if (statusCode === 201) {
                         self.omiseCardToken(response.id);
                         self.getPlaceOrderDeferredObject()
                             .fail(
@@ -250,7 +250,7 @@ define(
                     event.preventDefault();
                 }
 
-                if (typeof Omise === 'undefined') {
+                if (typeof Bongloy === 'undefined') {
                     alert($t('Unable to process the payment, loading the external card processing library is failed. Please contact the merchant.'));
                     return false;
                 }
