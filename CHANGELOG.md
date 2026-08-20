@@ -1,4 +1,156 @@
 # CHANGELOG
+## [v3.14.0 _(Aug, 20, 2026)_](https://github.com/omise/omise-magento/releases/tag/v3.14.0)
+- Fix Payment Flow Issue. (PR: [#546](https://github.com/omise/omise-magento/pull/546))
+
+## [v3.13.0 _(Aug, 20, 2026)_](https://github.com/omise/omise-magento/releases/tag/v3.13.0)
+- Improve Checkout Payment Flow (PR: [#532](https://github.com/omise/omise-magento/pull/532))
+
+## [v3.12.0 _(June, 23, 2026)_](https://github.com/omise/omise-magento/releases/tag/v3.12.0)
+- Compatible module with omise-php lib version 3.0.0  (PR: [#515](https://github.com/omise/omise-magento/pull/515))
+
+## [v3.11.0 _(Apr, 21, 2026)_](https://github.com/omise/omise-magento/releases/tag/v3.11.0)
+- Remove/Cleanup Internet Banking (PR: [#508](https://github.com/omise/omise-magento/pull/508))
+- Resolve Refund amount issue for multi currency store. (PR: [#509](https://github.com/omise/omise-magento/pull/509))
+
+## [v3.10.0 _(Mar, 10, 2026)_](https://github.com/omise/omise-magento/releases/tag/v3.10.0)
+- Add Passkey support (PR: [#499](https://github.com/omise/omise-magento/pull/499))
+- Update Rabbit LINE Pay to LINE Pay (PR: [#502](https://github.com/omise/omise-magento/pull/502))
+- Update Payment method logos (PR: [#505](https://github.com/omise/omise-magento/pull/505))
+- Fix Google Pay button styling on hover (PR: [#504](https://github.com/omise/omise-magento/pull/504))
+
+## [v3.9.0 _(Mar, 17, 2025)_](https://github.com/omise/omise-magento/releases/tag/v3.9.0)
+- Rebranding Opn Payments to Omise (PR: [#495](https://github.com/omise/omise-magento/pull/495))
+
+## [v3.8.0 _(Jul, 24, 2024)_](https://github.com/omise/omise-magento/releases/tag/v3.8.0)
+- Resolve dynamic property deprecation error for PHP 8.2 and above (PR: [#485](https://github.com/omise/omise-magento/pull/485))
+
+## [v3.7.1 _(May, 8, 2024)_](https://github.com/omise/omise-magento/releases/tag/v3.7.1)
+- Fixed minimum installment amount for installment_bay and installment_kbank (PR: [#479](https://github.com/omise/omise-magento/pull/479))
+- Remove OCBC PAO (PR: [#480](https://github.com/omise/omise-magento/pull/480))
+
+## [v3.7.0 _(Apr, 9, 2024)_](https://github.com/omise/omise-magento/releases/tag/v3.7.0)
+- Added WeChat Pay (PR: [#475](https://github.com/omise/omise-magento/pull/475))
+- Removed Pay with Points and Citi installment (PR: [#476](https://github.com/omise/omise-magento/pull/476))
+
+## [v3.6.1 _(Feb, 12, 2024)_](https://github.com/omise/omise-magento/releases/tag/v3.6.1)
+- Fixed redirect issue on cancelled card payment. (PR: [#470](https://github.com/omise/omise-magento/pull/470))
+
+## [v3.6.0 _(Jan, 23, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.6.0)
+- Add truemoney jumpapp. (PR: [#466](https://github.com/omise/omise-magento/pull/466))
+- Updated README.md. (PR: [#464](https://github.com/omise/omise-magento/pull/464))
+
+## [v3.5.2 _(Dec, 7, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.5.2)
+- Updated installment interest rates. (PR: [#460](https://github.com/omise/omise-magento/pull/460))
+
+## [v3.5.1 _(Nov, 24, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.5.1)
+- Updated OCBC digital logo. (PR: [#457](https://github.com/omise/omise-magento/pull/457))
+- Remove zero_interest_installments option from installment banks other than Maybank. (PR: [#458](https://github.com/omise/omise-magento/pull/458))
+
+## [v3.5.0 _(Oct, 24, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.5.0)
+- Added QR expires count down for promptpay. (PR: [#453](https://github.com/omise/omise-magento/pull/453))
+
+## [v3.4.0 _(Oct, 11, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.4.0)
+- Added dynamic webhooks with feature flag. (PR: [#450](https://github.com/omise/omise-magento/pull/450))
+
+## [v3.3.1 _(Oct, 03, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.3.1)
+- Added Promptpay QR payment instructions. (PR: [#447](https://github.com/omise/omise-magento/pull/447))
+- Bug fixed on Alipay. (PR: [#446](https://github.com/omise/omise-magento/pull/446))
+
+## [v3.3.0 _(Sep, 21, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.3.0)
+- Added OCBC Digital Payment. (PR: [#440](https://github.com/omise/omise-magento/pull/443))
+
+## [v3.2.0 _(Aug, 22, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.2.0)
+- Enabled AlipayHK, Kakaopay and Touch 'N Go for Thailand PSP. (PR: [#440](https://github.com/omise/omise-magento/pull/440))
+
+## [v3.1.2 _(Jun, 23, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.1.2)
+- Fetch the same number of orders as the value of refresh counter in the cron job. (PR: [#437](https://github.com/omise/omise-magento/pull/437))
+
+## [v3.1.1 _(Jun, 12, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.1.1)
+- Bug fixed: Atome failed to create charge with bundle product. (PR: [#433](https://github.com/omise/omise-magento/pull/433))
+
+## [v3.1.0 _(May 15, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.1.0)
+- Added PayPay payment method. (PR: [#428](https://github.com/omise/omise-magento/pull/428))
+- Get installment minimum from capability API. (PR: [#427](https://github.com/omise/omise-magento/pull/427))
+- Added Google Pay logo in the checkout page. (PR: [#426](https://github.com/omise/omise-magento/pull/426))
+- Added Atome payment method. (PR: [#422](https://github.com/omise/omise-magento/pull/422))
+- Refactored functions to reduce cognitive complexity. (PR: [#421](https://github.com/omise/omise-magento/pull/421))
+
+## [v3.0.0 _(Apr 3, 2023)_](https://github.com/omise/omise-magento/releases/tag/v3.0.0)
+- Replace credit card form with secure form with a feature flag options to switch between credit card forms. (PR: [#410](https://github.com/omise/omise-magento/pull/410))
+- Added an admin message to notify the user to update the current credit card form to embedded form. (PR: [#419](https://github.com/omise/omise-magento/pull/419))
+- Track the adoption of the secure form. (PR: [#420](https://github.com/omise/omise-magento/pull/420))
+- Removed deprecated ktb and scb internet banking.  (PR: [#417](https://github.com/omise/omise-magento/pull/417))
+- Bug fix: Hanlde ShopeePay cancel payment. (PR: [#415](https://github.com/omise/omise-magento/pull/415))
+
+## [v2.32.0 _(Mar 8, 2023)_](https://github.com/omise/omise-magento/releases/tag/v2.32.0)
+- Added Krungthai NEXT mobile banking (PR: [#409](https://github.com/omise/omise-magento/pull/409))
+
+## [v2.31.0 _(Jan 24, 2023)_](https://github.com/omise/omise-magento/releases/tag/v2.31.0)
+- Added ShopeePay under Thailand and Singpaore. (PR: [#404](https://github.com/omise/omise-magento/pull/404))
+- Added installment TTB. (PR: [#405](https://github.com/omise/omise-magento/pull/405))
+- Added a logic to reverse the cancelled items before changing order status from cancelled to processing. (PR: [#406](https://github.com/omise/omise-magento/pull/406))
+- Rebrand Lotus's Bill Payment. (PR: [#407](https://github.com/omise/omise-magento/pull/407))
+
+## [v2.30.0 _(Dec 14, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.30.0)
+- Rebranded Omise to Opn Payments. (PR: [#395](https://github.com/omise/omise-magento/pull/395))
+- Set order status from closed to processing on refund so that merchants can create credit memo. (PR: [#398](https://github.com/omise/omise-magento/pull/398))
+- Fixed duitnowobw bank list not showing. (PR: [#393](https://github.com/omise/omise-magento/pull/393))
+- Call omise refund after offline refund event triggered. (PR: [#392](https://github.com/omise/omise-magento/pull/392))
+- Use existing online refund function for all payment methods. (PR: [#397](https://github.com/omise/omise-magento/pull/397))
+- Bug fixed on partial refund. (PR: [#399](https://github.com/omise/omise-magento/pull/399))
+
+## [v2.29.2 _(Oct 25, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.29.2)
+- Issue of two invoices of the same order has been fixed. (PR: [#387](https://github.com/omise/omise-magento/pull/387))
+- Improve the implementation to prevent the customer entering redirect URL directly in the address bar of the browser. (PR: [#388](https://github.com/omise/omise-magento/pull/388))
+- Fixed the issue of FPX redirecting to cart page with invalid order status. Also added a delay in redirect process before fetching charge status. (PR: [#389](https://github.com/omise/omise-magento/pull/389))
+- Fixed conflict between COD with the plugin. (PR: [#390](https://github.com/omise/omise-magento/pull/390))
+
+## [v2.29.1 _(Oct 03, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.29.1)
+- Fixed an issue of syncing order status from Magento after reversing a charge not updating the product’s quantity. (PR: [#385](https://github.com/omise/omise-magento/pull/385))
+- Fixed the issue of duplicate cancelled event. (PR [#384](https://github.com/omise/omise-magento/pull/384))
+- Fixed blocker and serious issues alerted by SonarCloud. (PR [#383](https://github.com/omise/omise-magento/pull/383))
+
+## [v2.29.0 _(Sept 19, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.29.0)
+- Upgraded Omise PHP to version 2.16.0 (PR [#375](https://github.com/omise/omise-magento/pull/375))
+- Fix the issue of not redirecting to Thank you page. (PR [#376](https://github.com/omise/omise-magento/pull/376))
+- Added pipeline to deploy on staging. (PR [#380](https://github.com/omise/omise-magento/pull/380))
+- Added pipeline for code coverage with sonarcloud. (PR [#379](https://github.com/omise/omise-magento/pull/379))
+
+## [v2.28.0 _(Aug 30, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.28.0)
+- Order status will be updated via webhook when charge status is updated manually by Operations Team. (PR [#359](https://github.com/omise/omise-magento/pull/359))
+- Enhanced manual sync button to manually update order status to reflect refunds. (PR [#362](https://github.com/omise/omise-magento/pull/362))
+- Enhance webhook flow to capture refund.create event. (PR [#363](https://github.com/omise/omise-magento/pull/363))
+- Fix trim do not accept null value in php 8. (PR [#365](https://github.com/omise/omise-magento/pull/365))
+- Added unit tests for OmiseHelper.php and Github workflow to run unit tests. (PR [#364](https://github.com/omise/omise-magento/pull/364))
+- Fix the issue of an order getting canceled citing Payment expired when the charge was completed successfully. (PR [#368](https://github.com/omise/omise-magento/pull/368))
+- Enhancements display payment options. (PR [#361](https://github.com/omise/omise-magento/pull/361))
+- Add support RMS wallet (PR [#366](https://github.com/omise/omise-magento/pull/366))
+- Fix the issue of Sync Order Status button not working. (PR [#374](https://github.com/omise/omise-magento/pull/374))
+
+## [v2.27.0 _(Jun 30, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.27.0)
+- Added missing translation for Thai language. (PR [#356](https://github.com/omise/omise-magento/pull/356))
+- Items restored in the cart if the return URI is not triggered by Omise server. (PR [#357](https://github.com/omise/omise-magento/pull/357))
+- Allow GrabPay to have payment in THB. (PR [#358](https://github.com/omise/omise-magento/pull/358))
+
+## [v2.26.0 _(Jun 6, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.26.0)
+- Retain the cart items when payment fails (PR [#350](https://github.com/omise/omise-magento/pull/350))
+- Added support for Google Pay payment method (PR [#351](https://github.com/omise/omise-magento/pull/351))
+- Added bank of China logo for FPX payment method (PR [#352](https://github.com/omise/omise-magento/pull/352))
+- Payment instructions will be sent to the customer's email for convenience store payment method (PR [#353](https://github.com/omise/omise-magento/pull/353))
+
+## [v2.25.0 _(May 25, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.25.0)
+- Add Mobile banking BBL for TH (PR [#347](https://github.com/omise/omise-magento/pull/347))
+- Checks validity of the keys when adding them. (PR [#346](https://github.com/omise/omise-magento/pull/346))
+
+## [v2.24.0 _(May 17, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.24.0)
+- Add GrabPay payment method (PR [#344](https://github.com/omise/omise-magento/pull/344))
+
+## [v2.23.3 _(May 12, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.23.3)
+- Fetch capabilities. (PR [#337](https://github.com/omise/omise-magento/pull/337))
+- Preventing Omise plugin to initialize when public and secret keys are not present. (PR [#339](https://github.com/omise/omise-magento/pull/339))
+- Incorrect webhook endpoint being displayed has been fixed. (PR [#340](https://github.com/omise/omise-magento/pull/340))
+- Move OCBC Pao as standalone payment. (PR [#341](https://github.com/omise/omise-magento/pull/341))
+- Issue of new order email not being sent when order is placed with non omise payment method has been fixed. (PR [#342](https://github.com/omise/omise-magento/pull/342))
 
 ## [v2.23.2 _(Apr 20, 2022)_](https://github.com/omise/omise-magento/releases/tag/v2.23.2)
 - The issue of capturing a 3DS payment from sub-stores has been fixed. (PR [#335](https://github.com/omise/omise-magento/pull/335))

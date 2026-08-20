@@ -1,4 +1,5 @@
 <?php
+
 namespace Omise\Payment\Block\Checkout\Onepage\Success;
 
 class ConveniencestoreAdditionalInformation extends \Magento\Framework\View\Element\Template
@@ -29,15 +30,24 @@ class ConveniencestoreAdditionalInformation extends \Magento\Framework\View\Elem
      */
     protected function _toHtml()
     {
-        $paymentData = $this->_checkoutSession->getLastRealOrder()->getPayment()->getData();
-        if (!isset($paymentData['additional_information']['payment_type'])
-            || $paymentData['additional_information']['payment_type'] !== 'econtext') {
+        $order = $this->_checkoutSession->getLastRealOrder();
+        $paymentData = $order->getPayment()->getData();
+        $paymentAdditionalInfo = $paymentData['additional_information'];
+
+        if (!array_key_exists('payment_type', $paymentAdditionalInfo)) {
             return;
         }
-        $orderCurrency = $this->_checkoutSession->getLastRealOrder()->getOrderCurrency()->getCurrencyCode();
+
+        $paymentType = $paymentAdditionalInfo['payment_type'];
+
+        if (!isset($paymentType) || $paymentType !== 'econtext') {
+            return;
+        }
+
+        $orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
 
         $this->addData([
-            'link' => $paymentData['additional_information']['charge_authorize_uri'],
+            'link' => $paymentAdditionalInfo['charge_authorize_uri'],
             'order_amount' => number_format($paymentData['amount_ordered'], 2) .' '.$orderCurrency
         ]);
         

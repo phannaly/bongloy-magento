@@ -8,32 +8,13 @@ define(
         rendererList
     ) {
         'use strict';
-
-        const METHOD_RENDERERS = [
-            'cc',
-            'offsite-internetbanking',
-            'offsite-alipay',
-            'offsite-fpx',
-            'offsite-installment',
-            'offsite-truemoney',
-            'offline-tesco',
-            'offline-paynow',
-            'offline-promptpay',
-            'offsite-pointsciti',
-            'offsite-alipaycn',
-            'offsite-alipayhk',
-            'offsite-dana',
-            'offsite-gcash',
-            'offsite-kakaopay',
-            'offsite-touchngo',
-            'offsite-mobilebanking',
-            'offsite-rabbitlinepay',
-        ];
+        
+        const METHOD_RENDERERS = Object.keys(window.checkoutConfig.omise_payment_list);
 
         METHOD_RENDERERS.forEach(rendererName => {
             rendererList.push({
-                type: 'omise_' + rendererName.replace(/-/g, '_'),
-                component: 'Omise_Payment/js/view/payment/method-renderer/omise-' + rendererName + '-method'
+                type: rendererName,
+                component: 'Omise_Payment/js/view/payment/method-renderer/' + rendererName.replace(/_/g, '-') + '-method'
             });
         });
 

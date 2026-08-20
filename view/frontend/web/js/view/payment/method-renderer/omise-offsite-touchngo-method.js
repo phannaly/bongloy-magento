@@ -15,13 +15,20 @@ define(
 
         return Component.extend(Base).extend({
             defaults: {
-                template: 'Omise_Payment/payment/offsite-alipayplus-form'
+                template: 'Omise_Payment/payment/offsite-common-form'
             },
 
             isPlaceOrderActionAllowed: ko.observable(quote.billingAddress() != null),
 
             code: 'omise_offsite_touchngo',
-            restrictedToCurrencies: ['sgd']
+            restrictedToCurrencies: ['sgd', 'myr', 'thb'],
+            logo: {
+                file: "images/touch_n_go.svg",
+                width: "73",
+                height: "30",
+                name: "touchngo"
+            },
         });
+        
     }
 );

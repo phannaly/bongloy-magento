@@ -9,20 +9,15 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Omise\Payment\Model\Omise;
 use Omise\Payment\Model\Api\Charge;
-use Omise\Payment\Model\Config\Internetbanking;
-use Omise\Payment\Model\Config\Alipay;
-use Omise\Payment\Model\Config\Pointsciti;
-use Omise\Payment\Model\Config\Installment;
-use Omise\Payment\Model\Config\Truemoney;
-use Omise\Payment\Model\Config\Fpx;
-use Omise\Payment\Model\Config\Alipayplus;
-use Omise\Payment\Model\Config\Mobilebanking;
-use Omise\Payment\Model\Config\Rabbitlinepay;
 use Magento\Framework\Exception\LocalizedException;
 use Omise\Payment\Helper\OmiseHelper;
 use Omise\Payment\Helper\OmiseEmailHelper;
 use Omise\Payment\Model\Config\Cc as Config;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\App\Request\Http;
 
+#[\AllowDynamicProperties]
 class Offsite extends Action
 {
     /**
@@ -63,7 +58,10 @@ class Offsite extends Action
         Charge  $charge,
         OmiseHelper $helper,
         OmiseEmailHelper $emailHelper,
-        Config $config
+        Config $config,
+        CheckoutSession $checkoutSession,
+        LoggerInterface $logger,
+        Http $request
     ) {
         parent::__construct($context);
 
@@ -73,6 +71,9 @@ class Offsite extends Action
         $this->helper  = $helper;
         $this->emailHelper = $emailHelper;
         $this->config = $config;
+        $this->checkoutSession  = $checkoutSession;
+        $this->logger = $logger;
+        $this->request = $request;
 
         $this->omise->defineUserAgent();
         $this->omise->defineApiVersion();
@@ -86,53 +87,20 @@ class Offsite extends Action
     {
         $order = $this->session->getLastRealOrder();
 
-        if (! $order->getId()) {
-            $this->messageManager->addErrorMessage(__('The order session no longer exists, please make an order
-            again or contact our support if you have any questions.'));
-
+        if (!$this->isValid($order)) {
             return $this->redirect(self::PATH_CART);
         }
 
-        if ($order->getState() === Order::STATE_PROCESSING) {
+        $orderState = $order->getState();
+
+        if ($orderState === Order::STATE_PROCESSING) {
             return $this->redirect(self::PATH_SUCCESS);
         }
 
-        if ($order->getState() !== Order::STATE_PENDING_PAYMENT) {
-            $this->invalid($order, __('Invalid order status, cannot validate the payment. Please contact our
-            support if you have any questions.'));
-
-            return $this->redirect(self::PATH_CART);
-        }
-
-        if (! $payment = $order->getPayment()) {
-            $this->invalid($order, __('Cannot retrieve a payment detail from the request. Please contact our
-            support if you have any questions.'));
-
-            return $this->redirect(self::PATH_CART);
-        }
-        
-        $paymentMethod = $payment->getMethod();
-
-        if (!$this->helper->isOffsitePayment($paymentMethod)) {
-            $this->invalid(
-                $order,
-                __('Invalid payment method. Please contact our support if you have any questions.')
-            );
-            return $this->redirect(self::PATH_CART);
-        }
-
-        if (! $charge_id = $payment->getAdditionalInformation('charge_id')) {
-            $this->cancel(
-                $order,
-                __('Cannot retrieve a charge reference id. Please contact our support to confirm your payment.')
-            );
-            $this->session->restoreQuote();
-
-            return $this->redirect(self::PATH_CART);
-        }
-
         try {
-            $charge = $this->charge->find($charge_id);
+            $payment = $order->getPayment();
+            $chargeId = $payment->getAdditionalInformation('charge_id');
+            $charge = $this->charge->find($chargeId);
 
             if (! $charge instanceof \Omise\Payment\Model\Api\BaseObject) {
                 throw new LocalizedException(
@@ -141,14 +109,15 @@ class Offsite extends Action
             }
 
             if ($charge instanceof \Omise\Payment\Model\Api\Error) {
+                // restoring the cart
+                $this->checkoutSession->restoreQuote();
                 throw new LocalizedException(__($charge->getMessage()));
             }
 
+            $paymentMethod = $payment->getMethod();
+
             if ($charge->isFailed()) {
-                throw new LocalizedException(
-                    __('Payment failed. ' . ucfirst($charge->failure_message) . ', please contact our support
-                    if you have any questions.')
-                );
+                return $this->handleFailure($charge);
             }
 
             // Do not proceed if webhook is enabled
@@ -160,95 +129,163 @@ class Offsite extends Action
             $payment->setLastTransId($charge->id);
 
             if ($charge->isSuccessful()) {
-                // Update order state and status.
-                $order->setState(Order::STATE_PROCESSING);
-                $order->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
-
-                $invoice = $this->helper->createInvoiceAndMarkAsPaid($order, $charge->id);
-                $this->emailHelper->sendInvoiceAndConfirmationEmails($order);
-                
-                switch ($paymentMethod) {
-                    case Internetbanking::CODE:
-                        $dispPaymentMethod = "Internet Banking";
-                        break;
-                    case Installment::CODE:
-                        $dispPaymentMethod = "Installment";
-                        break;
-                    case Alipay::CODE:
-                        $dispPaymentMethod = "Alipay";
-                        break;
-                    case Truemoney::CODE:
-                        $dispPaymentMethod = "True Money";
-                        break;
-                    case Pointsciti::CODE:
-                        $dispPaymentMethod = "Citi Pay with Points";
-                        break;
-                    case Fpx::CODE:
-                        $dispPaymentMethod = "FPX";
-                        break;
-                    case Alipayplus::ALIPAY_CODE:
-                        $dispPaymentMethod = "Alipay (Alipay+ Partner)";
-                        break;
-                    case Alipayplus::ALIPAYHK_CODE:
-                        $dispPaymentMethod = "AlipayHK (Alipay+ Partner)";
-                        break;
-                    case Alipayplus::DANA_CODE:
-                        $dispPaymentMethod = "DANA (Alipay+ Partner)";
-                        break;
-                    case Alipayplus::GCASH_CODE:
-                        $dispPaymentMethod = "GCash (Alipay+ Partner)";
-                        break;
-                    case Alipayplus::KAKAOPAY_CODE:
-                        $dispPaymentMethod = "Kakao Pay (Alipay+ Partner)";
-                        break;
-                    case Alipayplus::TOUCHNGO_CODE:
-                        $dispPaymentMethod = "TNG eWallet (Alipay+ Partner)";
-                        break;
-                    case Mobilebanking::CODE:
-                        $dispPaymentMethod = "Mobile Banking";
-                        break;
-                    case Rabbitlinepay::CODE:
-                        $dispPaymentMethod = "Rabbit LINE Pay";
-                        break;
-                }
-                
-                // Add transaction.
-                $payment->addTransactionCommentsToOrder(
-                    $payment->addTransaction(Transaction::TYPE_PAYMENT, $invoice),
-                    __(
-                        "Amount of %1 has been paid via Omise $dispPaymentMethod payment",
-                        $order->getBaseCurrency()->formatTxt($invoice->getBaseGrandTotal())
-                    )
-                );
-
-                $order->save();
-                return $this->redirect(self::PATH_SUCCESS);
+                return $this->handleSuccess($order, $charge->id, $payment, $paymentMethod);
             }
 
-            // Update order state and status.
-            $order->setState(Order::STATE_PAYMENT_REVIEW);
-            $order->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PAYMENT_REVIEW));
-
-            // Add transaction.
-            $transaction = $payment->addTransaction(Transaction::TYPE_PAYMENT);
-            $transaction->setIsClosed(false);
-            $payment->addTransactionCommentsToOrder(
-                $transaction,
-                __('The payment has been processing.<br/>Due to the Bank process, this might takes a few seconds
-                or up-to an hour. Please click "Accept" or "Deny" the payment manually once the result has been 
-                updated (you can check at Omise Dashboard).')
-            );
-
-            $order->save();
-
-            // TODO: Should redirect users to a page that tell users that
-            //       their payment is in review instead of success page.
-            return $this->redirect(self::PATH_SUCCESS);
+            $this->handlePending($order, $payment);
         } catch (Exception $e) {
             $this->cancel($order, $e->getMessage());
 
             return $this->redirect(self::PATH_CART);
         }
+    }
+
+    /**
+     * Mark order as failed
+     *
+     * @param object $charge
+     */
+    private function handleFailure($charge)
+    {
+        // restoring the cart
+        $this->checkoutSession->restoreQuote();
+        $failureMessage = $charge->failure_message ?
+            ucfirst($charge->failure_message) :
+            'Payment cancelled';
+        $errorMessage = __(
+            "Payment failed. $failureMessage, please contact our support if you have any questions."
+        );
+
+        // This cancels the order, logs error and displays message in cart page
+        throw new \Magento\Framework\Exception\LocalizedException($errorMessage);
+    }
+
+    /**
+     * Mark order as success
+     *
+     * @param object $order
+     * @param string $chargeId
+     * @param object $payment
+     * @param string $paymentMethod
+     */
+    private function handleSuccess($order, $chargeId, $payment, $paymentMethod)
+    {
+        // Update order state and status.
+        $order->setState(Order::STATE_PROCESSING);
+        $order->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PROCESSING));
+
+        $invoice = $this->helper->createInvoiceAndMarkAsPaid($order, $chargeId);
+        $this->emailHelper->sendInvoiceAndConfirmationEmails($order);
+
+        $paymentMethodLabel = $this->helper->getOmiseLabelByOmiseCode($paymentMethod);
+        // Add transaction.
+        $payment->addTransactionCommentsToOrder(
+            $payment->addTransaction(Transaction::TYPE_PAYMENT, $invoice),
+            __(
+                "Amount of %1 has been paid via Omise $paymentMethodLabel payment",
+                $order->getBaseCurrency()->formatTxt($invoice->getBaseGrandTotal())
+            )
+        );
+
+        $order->save();
+        return $this->redirect(self::PATH_SUCCESS);
+    }
+
+    /**
+     * Mark order as pending
+     *
+     * @param object $order
+     * @param object $payment
+     */
+    private function handlePending($order, $payment)
+    {
+        // Update order state and status.
+        $order->setState(Order::STATE_PAYMENT_REVIEW);
+        $order->setStatus($order->getConfig()->getStateDefaultStatus(Order::STATE_PAYMENT_REVIEW));
+
+        // Add transaction.
+        $transaction = $payment->addTransaction(Transaction::TYPE_PAYMENT);
+        $transaction->setIsClosed(false);
+        $payment->addTransactionCommentsToOrder(
+            $transaction,
+            __('The payment is under processing.<br/>Due to Bank process, this might take up to an hour to
+            complete. Click "Accept" or "Deny" to accept or deny the payment manually, after the result of
+            the processing has been updated (check the result on the Omise Dashboard).')
+        );
+
+        $order->save();
+
+        // TODO: Should redirect users to a page that tell users that
+        // their payment is in review instead of success page.
+        return $this->redirect(self::PATH_SUCCESS);
+    }
+
+    /**
+     * Check if the transaction is valid
+     *
+     * @param object $order
+     * @return boolean
+     */
+    private function isValid($order)
+    {
+        if (! $order->getId()) {
+            $this->messageManager->addErrorMessage(__('The order session no longer exists, please make an order
+            again or contact our support if you have any questions.'));
+
+            return false;
+        }
+
+        $payment = $order->getPayment();
+
+        if (!$payment) {
+            $this->invalid($order, __('Cannot retrieve a payment detail from the request. Please contact our
+            support if you have any questions.'));
+
+            return false;
+        }
+
+        $token = $this->request->getParam('token');
+
+        if (!$token || $payment->getAdditionalInformation('token') !== rtrim($token, "/")) {
+            $this->invalid(
+                $order,
+                __('The URL is invalid. Please contact our support if you have any questions.')
+            );
+
+            return false;
+        }
+
+        $orderState = $order->getState();
+        $validOrderStates = [Order::STATE_PENDING_PAYMENT, Order::STATE_CANCELED, Order::STATE_PROCESSING];
+
+        if (!in_array($orderState, $validOrderStates)) {
+            $this->invalid($order, __('Invalid order status, cannot validate the payment. Please contact our
+            support if you have any questions.'));
+
+            return false;
+        }
+
+        $paymentMethod = $payment->getMethod();
+
+        if (!$this->helper->isOffsitePaymentMethod($paymentMethod)) {
+            $this->invalid(
+                $order,
+                __('Invalid payment method. Please contact our support if you have any questions.')
+            );
+            return false;
+        }
+
+        if (!$payment->getAdditionalInformation('charge_id')) {
+            $this->cancel(
+                $order,
+                __('Cannot retrieve a charge reference id. Please contact our support to confirm your payment.')
+            );
+            $this->session->restoreQuote();
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

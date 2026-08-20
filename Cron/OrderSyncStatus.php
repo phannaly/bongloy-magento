@@ -4,6 +4,7 @@ namespace Omise\Payment\Cron;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Exception;
 
+#[\AllowDynamicProperties]
 class OrderSyncStatus
 {
     /**
@@ -16,6 +17,7 @@ class OrderSyncStatus
      */
     private $paymentMethodArray = [
         "omise_cc",
+        "omise_cc_googlepay",
         "omise_offline_conveniencestore",
         "omise_offline_paynow",
         "omise_offline_promptpay",
@@ -29,9 +31,18 @@ class OrderSyncStatus
         "omise_offsite_gcash",
         "omise_offsite_kakaopay",
         "omise_offsite_touchngo",
-        "omise_offsite_internetbanking",
         "omise_offsite_mobilebanking",
         "omise_offsite_rabbitlinepay",
+        "omise_offsite_ocbc_digital",
+        "omise_offsite_grabpay",
+        "omise_offsite_boost",
+        "omise_offsite_duitnowobw",
+        "omise_offsite_duitnowqr",
+        "omise_offsite_maybankqr",
+        "omise_offsite_shopeepay",
+        "omise_offsite_atome",
+        "omise_offsite_paypay",
+        "omise_offiste_wechat_pay"
     ];
 
     /**
@@ -63,11 +74,6 @@ class OrderSyncStatus
      * @var \Omise\Payment\Model\SyncStatus
      */
     private $syncStatus;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface
-     */
-    private $timezone;
 
     /**
      * @var \Omise\Payment\Model\Api\Charge
@@ -109,24 +115,18 @@ class OrderSyncStatus
     public function __construct(
         \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
-        \Omise\Payment\Model\Api\Charge $apiCharge,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Omise\Payment\Model\SyncStatus $syncStatus,
-        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Omise\Payment\Model\Config\Config $config,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
         \Magento\Framework\App\Cache\Frontend\Pool $cacheFrontendPool
     ) {
         $this->_orderCollectionFactory = $orderCollectionFactory;
         $this->orderRepository = $orderRepository;
-        $this->apiCharge = $apiCharge;
         $this->scopeConfig = $scopeConfig;
         $this->syncStatus = $syncStatus;
-        $this->timezone = $timezone;
         $this->configWriter = $configWriter;
-        $this->_storeManager = $storeManager;
         $this->config = $config;
         $this->cacheTypeList = $cacheTypeList;
         $this->cacheFrontendPool = $cacheFrontendPool;
@@ -138,7 +138,9 @@ class OrderSyncStatus
      */
     public function execute()
     {
-        if ($this->config->getValue('enable_cron_autoexpirysync')) {
+        $isCronEnabled = (bool)$this->config->getValue('enable_cron_autoexpirysync');
+
+        if ($isCronEnabled) {
             try {
                 $this->sync();
             } catch (\Exception $e) {
@@ -158,21 +160,30 @@ class OrderSyncStatus
         $this->lastProcessedOrderId = $this->scopeConfig->getValue(
             'payment/omise/cron_last_order_id'
         );
-        $orderIds    = $this->getOrderIds();
+
+        $orderIds = $this->getOrderIds();
+
         if (!empty($orderIds)) {
             foreach ($orderIds as $order) {
                 $this->lastProcessedOrderId = $order['entity_id'];
                 $this->order = $this->orderRepository->get($order['entity_id']);
+
+                // set the store to fetch configuration values from store specific to the order
+                $this->config->setStoreId($this->order->getStore()->getId());
+
                 $isExpired = $this->isExpired();
+
                 if ($isExpired) {
                     $this->syncStatus->cancelOrderInvoice($this->order);
-                    $this->order->registerCancellation(__('Omise: Payment expired. (manual sync).'))
-                      ->save();
+                    $this->order
+                        ->registerCancellation(__('Omise : Payment expired. (cron job sync).'))
+                        ->save();
                 }
             }
         } else {
             $this->lastProcessedOrderId = 0;
         }
+
         $this->saveLastOrderId();
     }
 
@@ -185,7 +196,7 @@ class OrderSyncStatus
     {
         $collection = $this->_orderCollectionFactory->create()
             ->addAttributeToSort('entity_id', 'desc')
-            ->setPageSize(50)
+            ->setPageSize($this->refreshCounter)
             ->setCurPage(1);
 
         $collection->getSelect()
@@ -204,30 +215,6 @@ class OrderSyncStatus
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
-     * @return string
-     * @deprecated
-     *  - Method to be removed once new logic is confirmed as stable
-     */
-    private function refreshExpiryDate($order)
-    {
-        $payment    = $this->order->getPayment();
-        $chargeId   = $payment->getAdditionalInformation('charge_id');
-        $expiryDate = $payment->getAdditionalInformation('omise_expiry_date');
-        if (!isset($expiryDate) && isset($chargeId) && $this->refreshCounter > 0) {
-            $this->charge = \OmiseCharge::retrieve(
-                $chargeId,
-                $this->config->getPublicKey(),
-                $this->config->getSecretKey()
-            );
-            $expiryDate = date("Y-m-d H:i:s", strtotime($this->charge['expires_at']));
-            $payment->setAdditionalInformation('omise_expiry_date', $expiryDate);
-            $this->refreshCounter--;
-        }
-        return $expiryDate;
-    }
-
-    /**
      * isExpired
      *  - Gets fresh charge data and returns bool representing if the charge has expired or not
      * @return bool
@@ -237,6 +224,7 @@ class OrderSyncStatus
         $isExpired = true;
         $payment    = $this->order->getPayment();
         $chargeId   = $payment->getAdditionalInformation('charge_id');
+
         if (isset($chargeId) && $this->refreshCounter > 0) {
             $this->charge = \OmiseCharge::retrieve(
                 $chargeId,
@@ -246,6 +234,7 @@ class OrderSyncStatus
             $isExpired = $this->charge['expired'];
             $this->refreshCounter--;
         }
+
         return (bool)$isExpired;
     }
 
@@ -260,6 +249,7 @@ class OrderSyncStatus
                 $this->lastProcessedOrderId
             );
             $this->cacheTypeList->cleanType('config');
+
             foreach ($this->cacheFrontendPool as $cacheFrontend) {
                 $cacheFrontend->getBackend()->clean();
             }

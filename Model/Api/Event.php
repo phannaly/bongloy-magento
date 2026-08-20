@@ -16,6 +16,7 @@ use Omise\Payment\Model\Api\Charge;
  * @property Object $data
  * @see      https://www.omise.co/events-api
  */
+#[\AllowDynamicProperties]
 class Event extends BaseObject
 {
     /**
@@ -54,10 +55,12 @@ class Event extends BaseObject
      */
     protected function transformDataToObject($data)
     {
-        switch ($data['object']) {
-            case 'charge':
-                $data = $this->charge->find($data['id']);
-                break;
+        if ('charge' === $data['object']) {
+            return $this->charge->find($data['id']);
+        }
+
+        if ('refund' === $data['object']) {
+            return $this->charge->find($data['charge']);
         }
 
         return $data;

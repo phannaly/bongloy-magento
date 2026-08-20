@@ -1,8 +1,10 @@
 <?php
+
 namespace Omise\Payment\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Payment\Model\CcConfig as MagentoCcConfig;
+use Omise\Payment\Block\Adminhtml\System\Config\CardFormCustomization\Theme;
 use Omise\Payment\Model\Config\Cc as OmiseCcConfig;
 use Omise\Payment\Model\Customer;
 
@@ -40,6 +42,9 @@ class CcConfigProvider implements ConfigProviderInterface
      */
     public function getConfig()
     {
+        $theme = new Theme();
+        $customDesign = $this->omiseCcConfig->getCardThemeConfig();
+        $selectedTheme = $this->omiseCcConfig->getCardTheme();
         return [
             'payment' => [
                 'ccform' => [
@@ -47,9 +52,12 @@ class CcConfigProvider implements ConfigProviderInterface
                     'years'  => [OmiseCcConfig::CODE => $this->magentoCcConfig->getCcYears()],
                 ],
                 OmiseCcConfig::CODE => [
-                    'publicKey'          => $this->omiseCcConfig->getPublicKey(),
-                    'isCustomerLoggedIn' => $this->customer->isLoggedIn(),
-                    'cards'              => $this->getCards(),
+                    'publicKey'                     => $this->omiseCcConfig->getPublicKey(),
+                    'isCustomerLoggedIn'            => $this->customer->isLoggedIn(),
+                    'cards'                         => $this->getCards(),
+                    'locale'                        => $this->omiseCcConfig->getStoreLocale(),
+                    'formDesign'                    => $theme->getFormDesign($selectedTheme, $customDesign),
+                    'theme'                         => $selectedTheme
                 ],
             ]
         ];
@@ -60,13 +68,13 @@ class CcConfigProvider implements ConfigProviderInterface
      */
     public function getCards()
     {
-        if (! $this->customer->getMagentoCustomerId() || ! $this->customer->getId()) {
+        if (!$this->customer->getMagentoCustomerId() || !$this->customer->getId()) {
             return [];
         }
 
         $cards = $this->customer->cards(['order' => 'reverse_chronological']);
 
-        if (! $cards) {
+        if (!$cards) {
             return [];
         }
 

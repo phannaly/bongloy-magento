@@ -13,7 +13,11 @@ use Omise\Payment\Model\Validator\Payment\AuthorizeResultValidator;
 use Omise\Payment\Model\Validator\Payment\CaptureResultValidator;
 use Omise\Payment\Helper\OmiseEmailHelper;
 use Omise\Payment\Helper\OmiseHelper;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Psr\Log\LoggerInterface;
+use Magento\Framework\App\Request\Http;
 
+#[\AllowDynamicProperties]
 class Threedsecure extends Action
 {
     /**
@@ -46,7 +50,10 @@ class Threedsecure extends Action
         Session $session,
         Config  $config,
         OmiseEmailHelper $emailHelper,
-        OmiseHelper $helper
+        OmiseHelper $helper,
+        CheckoutSession $checkoutSession,
+        LoggerInterface $logger,
+        Http $request
     ) {
         parent::__construct($context);
 
@@ -54,6 +61,9 @@ class Threedsecure extends Action
         $this->config  = $config;
         $this->emailHelper = $emailHelper;
         $this->helper = $helper;
+        $this->checkoutSession  = $checkoutSession;
+        $this->logger  = $logger;
+        $this->request = $request;
     }
 
     /**
@@ -82,7 +92,18 @@ class Threedsecure extends Action
             return $this->redirect(self::PATH_CART);
         }
 
-        if ($payment->getMethod() !== 'omise' && $payment->getMethod() !== 'omise_cc') {
+        $token = $this->request->getParam('token');
+
+        if (!$token || $payment->getAdditionalInformation('token') !== rtrim($token, "/")) {
+            $this->invalid(
+                $order,
+                __('The URL is invalid. Please contact our support if you have any questions.')
+            );
+
+            return $this->redirect(self::PATH_CART);
+        }
+
+        if ($payment->getMethod() !== 'omise' && !$this->helper->isCreditCardPaymentMethod($payment->getMethod())) {
             $this->invalid(
                 $order,
                 __('Invalid payment method. Please contact our support if you have any questions.')
@@ -113,11 +134,17 @@ class Threedsecure extends Action
         }
 
         try {
+            // adding delay to cover the delay in updating the charge status in the Omise backend
+            usleep(500000);
             $charge = \OmiseCharge::retrieve($charge_id, $this->config->getPublicKey(), $this->config->getSecretKey());
 
             $result = $this->validate($charge);
 
             if ($result instanceof Invalid) {
+                // restoring the cart
+                $this->checkoutSession->restoreQuote();
+
+                // This cancels the order, logs error and displays message in cart page
                 throw new \Magento\Framework\Exception\LocalizedException($result->getMessage());
             }
 
@@ -141,7 +168,7 @@ class Threedsecure extends Action
                 $payment->addTransactionCommentsToOrder(
                     $payment->addTransaction(Transaction::TYPE_CAPTURE, $invoice),
                     __(
-                        'Captured amount of %1 online via Omise Payment Gateway (3-D Secure payment).',
+                        'Captured amount of %1 online via Omise Gateway (3-D Secure payment).',
                         $order->getBaseCurrency()->formatTxt($invoice->getBaseGrandTotal())
                     )
                 );
@@ -150,7 +177,7 @@ class Threedsecure extends Action
                     $payment->addTransaction(Transaction::TYPE_AUTH),
                     $payment->prependMessage(
                         __(
-                            'Authorized amount of %1 via Omise Payment Gateway (3-D Secure payment).',
+                            'Authorized amount of %1 via Omise Gateway (3-D Secure payment).',
                             $order->getBaseCurrency()->formatTxt($order->getTotalDue())
                         )
                     )

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <tesco>
             <email>
@@ -12,8 +11,9 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
             <omise>
                 <sandbox_status>0</sandbox_status>
                 <model>OmiseAdapter</model>
-                <generate_invoice_at_order_status>\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT</generate_invoice_at_order_status>
+                <generate_invoice_at_order_status>pending_payment</generate_invoice_at_order_status>
                 <webhook_status>1</webhook_status>
+                <dynamic_webhooks>0</dynamic_webhooks>
             </omise>
 
             <omise_cc>
@@ -25,20 +25,12 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize</payment_action>
+                <card_form_theme>light</card_form_theme>
+                <card_form_theme_config></card_form_theme_config>
             </omise_cc>
-
-            <omise_offsite_internetbanking>
-                <active>0</active>
-                <title>Internet Banking</title>
-                <model>OmiseInternetbankingAdapter</model>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <can_capture>1</can_capture>
-                <can_review_payment>1</can_review_payment>
-                <payment_action>authorize_capture</payment_action>
-            </omise_offsite_internetbanking>
 
             <omise_offsite_alipay>
                 <active>0</active>
@@ -49,6 +41,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_alipay>
 
@@ -57,6 +51,7 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <title>PayNow QR Payment</title>
                 <model>OmisePaynowAdapter</model>
                 <is_gateway>1</is_gateway>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
                 <can_refund>1</can_refund>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -74,20 +69,10 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>0</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>order</payment_action>
             </omise_offline_promptpay>
-
-            <omise_offsite_pointsciti>
-                <active>0</active>
-                <title>Citi Pay with Points</title>
-                <model>OmisePointscitiAdapter</model>
-                <is_gateway>1</is_gateway>
-                <can_initialize>1</can_initialize>
-                <can_use_checkout>1</can_use_checkout>
-                <can_capture>1</can_capture>
-                <can_review_payment>1</can_review_payment>
-                <payment_action>authorize_capture</payment_action>
-            </omise_offsite_pointsciti>
 
             <omise_offsite_installment>
                 <active>0</active>
@@ -98,6 +83,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_installment>
 
@@ -110,6 +97,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_truemoney>
 
@@ -123,6 +112,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>0</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>order</payment_action>
             </omise_offsite_fpx>
 
@@ -135,18 +126,22 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>0</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>order</payment_action>
             </omise_offline_conveniencestore>
 
             <omise_offline_tesco>
                 <active>0</active>
-                <title>Tesco Bill Payment</title>
+                <title>Lotus's Bill Payment</title>
                 <model>OmiseTescoAdapter</model>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>0</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>order</payment_action>
             </omise_offline_tesco>
 
@@ -159,6 +154,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_alipaycn>
 
@@ -171,6 +168,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_alipayhk>
 
@@ -183,6 +182,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_dana>
 
@@ -195,6 +196,8 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_gcash>
 
@@ -207,18 +210,22 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_kakaopay>
 
             <omise_offsite_touchngo>
                 <active>0</active>
-                <title>TNG eWallet (Alipay+ Partner)</title>
+                <title>Touch`n Go eWallet</title>
                 <model>OmiseTouchngoAdapter</model>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_touchngo>
 
@@ -231,12 +238,14 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_use_checkout>1</can_use_checkout>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_mobilebanking>
 
             <omise_offsite_rabbitlinepay>
                 <active>0</active>
-                <title>Rabbit LINE Pay</title>
+                <title>LINE Pay</title>
                 <model>OmiseRabbitlinepayAdapter</model>
                 <is_gateway>1</is_gateway>
                 <can_initialize>1</can_initialize>
@@ -244,8 +253,167 @@ xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
                 <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
                 <payment_action>authorize_capture</payment_action>
             </omise_offsite_rabbitlinepay>
+
+            <omise_offsite_ocbc_digital>
+                <active>0</active>
+                <title>OCBC Digital</title>
+                <model>OmiseOcbcDigitalAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_ocbc_digital>
+
+            <omise_offsite_grabpay>
+                <active>0</active>
+                <title>GrabPay</title>
+                <model>OmiseGrabpayAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_grabpay>
+
+            <omise_cc_googlepay>
+                <active>0</active>
+                <title>Google Pay</title>
+                <merchant_id></merchant_id>
+                <request_billing_address>0</request_billing_address>
+                <request_phone_number>0</request_phone_number>
+                <model>OmiseCcGooglePayAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_cc_googlepay>
+
+            <omise_offsite_boost>
+                <active>0</active>
+                <title>Boost</title>
+                <model>OmiseBoostAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_boost>
+
+            <omise_offsite_duitnowobw>
+                <active>0</active>
+                <title>DuitNow Online Banking/Wallets</title>
+                <model>OmiseDuitnowOBWAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_duitnowobw>
+
+            <omise_offsite_duitnowqr>
+                <active>0</active>
+                <title>DuitNow QR</title>
+                <model>OmiseDuitnowQRAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_duitnowqr>
+
+            <omise_offsite_maybankqr>
+                <active>0</active>
+                <title>Maybank QRPay</title>
+                <model>OmiseMaybankQRAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_maybankqr>
+
+            <omise_offsite_shopeepay>
+                <active>0</active>
+                <title>ShopeePay</title>
+                <model>OmiseShopeepayAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_shopeepay>
+
+            <omise_offsite_atome>
+                <active>0</active>
+                <title>Atome</title>
+                <model>OmiseAtomeAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_atome>
+
+            <omise_offsite_paypay>
+                <active>0</active>
+                <title>PayPay</title>
+                <model>OmisePayPayAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_paypay>
+
+            <omise_offsite_wechat_pay>
+                <active>0</active>
+                <title>WeChat Pay</title>
+                <model>OmiseWeChatPayAdapter</model>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_capture>1</can_capture>
+                <can_review_payment>1</can_review_payment>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <payment_action>authorize_capture</payment_action>
+            </omise_offsite_wechat_pay>
         </payment>
     </default>
 </config>

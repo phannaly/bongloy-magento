@@ -5,6 +5,7 @@ namespace Omise\Payment\Model\Api;
 use Exception;
 use OmiseCharge;
 use Omise\Payment\Model\Config\Config;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * @property string $object
@@ -76,10 +77,7 @@ class Charge extends BaseObject
         try {
             $this->refresh(OmiseCharge::create($params));
         } catch (Exception $e) {
-            return new Error([
-                'code'    => 'bad_request',
-                'message' => $e->getMessage()
-            ]);
+            throw new LocalizedException(__('Failed to charge : ' . $e->getMessage()));
         }
 
         return $this;
@@ -108,14 +106,10 @@ class Charge extends BaseObject
     public function refund($refundData)
     {
         try {
-            $refund = $this->object->refunds()->create($refundData);
+            $refund = $this->object->refund($refundData);
         } catch (Exception $e) {
-            return new Error([
-                'code'    => 'failed_refund',
-                'message' => $e->getMessage()
-            ]);
+            throw new LocalizedException(__('Failed to refund : ' . $e->getMessage()));
         }
-
         return $refund;
     }
 
@@ -126,7 +120,7 @@ class Charge extends BaseObject
      */
     public function getMetadata($field)
     {
-        return ( $this->metadata != null && isset($this->metadata[$field])) ? $this->metadata[$field] : null;
+        return ($this->metadata != null && isset($this->metadata[$field])) ? $this->metadata[$field] : null;
     }
 
     /**
@@ -142,7 +136,7 @@ class Charge extends BaseObject
      */
     public function isUnauthorized()
     {
-        return ! $this->isAuthorized();
+        return !$this->isAuthorized();
     }
 
     /**
@@ -150,9 +144,7 @@ class Charge extends BaseObject
      */
     public function isPaid()
     {
-        $paid = $this->paid != null ? $this->paid : $this->captured;
-
-        return $paid;
+        return $this->paid != null ? $this->paid : $this->captured;
     }
 
     /**
@@ -160,7 +152,7 @@ class Charge extends BaseObject
      */
     public function isUnpaid()
     {
-        return ! $this->isPaid();
+        return !$this->isPaid();
     }
 
     /**
@@ -193,5 +185,30 @@ class Charge extends BaseObject
     public function isFailed()
     {
         return $this->status === 'failed';
+    }
+
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    public function getRefundedAmount()
+    {
+        $refundedAmount = 0;
+
+        if (!$this->refunds) {
+            return $refundedAmount;
+        }
+
+        foreach ($this->refunds['data'] as $refund) {
+            $refundedAmount += ($refund['amount'] / 100);
+        }
+
+        return $refundedAmount;
+    }
+
+    public function isFullyRefunded()
+    {
+        return (($this->amount / 100) - $this->getRefundedAmount()) === 0;
     }
 }

@@ -2,15 +2,20 @@
     <div class="payment-method-title field choice">
         <input type="radio" name="payment[method]" class="radio"
             data-bind="attr: {
-               'id': getCode()
-               },
-               value: getCode(),
-               checked: isChecked,
-               click: selectPaymentMethod,
-               visible: isRadioButtonVisible(),
-               enable: isActive()" />
-        <label data-bind="attr: {'for': getCode()}" class="label">
+                    'id': getCode()
+                },
+                value: getCode(),
+                checked: isChecked,
+                click: selectPaymentMethod,
+                visible: isRadioButtonVisible(),
+                enable: isActive()"
+            />
+        <label class="omise-payment-method-title label" data-bind="attr: {'for': getCode()}">
             <span data-bind="text: getTitle()"></span>
+            <!-- ko if: getLogo() -->
+            <img class="omise-custom-truemoney" data-bind="attr: { src: require.toUrl('Omise_Payment/'+logo.file), alt: logo.name } ,
+                style: { width: logo.width ? logo.width +'px' : '60px', maxHeight: '60px'}" />
+            <!-- /ko -->
         </label>
         <div data-bind="visible: isSandboxOn()" class="page messages">
             <div role="alert" class="messages">
@@ -21,24 +26,22 @@
         </div>
     </div>
     <div class="payment-method-content">
-        <!-- ko foreach: getRegion('messages') -->
-        <!-- ko template: getTemplate() -->
-        <!-- /ko -->
-        <!--/ko-->
+        <!-- ko if: isWalletEnabled() -->
         <div class="field number">
             <label data-bind="attr: {for: getCode() + 'phoneNumber'}" class="label">
                 <h4><!-- ko i18n: 'True Money Phone Number'--><!-- /ko --></h4>
             </label>
             <div class="control">
                 <input type="text" class="input-text"
-                       data-bind="attr: {
-                       id: getCode() + 'phoneNumber',
-                       placeholder: getCustomerSavedPhoneNumber()
-                       },
-                       value: trueMoneyPhoneNumber,
-                    "/>
+                    data-bind="attr: {
+                    id: getCode() + 'phoneNumber',
+                    placeholder: getCustomerSavedPhoneNumber()
+                    },
+                    value: trueMoneyPhoneNumber,
+                "/>
             </div>
         </div>
+        <!-- /ko -->
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
             <!-- ko template: getTemplate() -->

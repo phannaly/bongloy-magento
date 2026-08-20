@@ -22,16 +22,17 @@ define(
 
             code: 'omise_offsite_fpx',
             restrictedToCurrencies: ['myr'],
-            banks: ko.observable(checkoutConfig.fpx.banks),
+            logo: {
+                file: "images/fpx.svg",
+                width: "73",
+                height: "20",
+                name: "fpx"
+            },
+            banks: ko.observable(checkoutConfig.omise_payment_list['omise_offsite_fpx'][0].banks),
             selectedFpxBank: ko.observable(),
             bankLabel: function(name, active) {
-                var bankLabel = name;
-
-                if(!active){
-                    bankLabel = bankLabel + " (offline)";
-                }
-
-                return bankLabel;
+                const suffix = active ? "" : " (offline)";
+                return name + suffix;
             },
 
             /**
@@ -47,7 +48,6 @@ define(
                     }
                 };
             },
-
         });
     }
 );

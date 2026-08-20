@@ -3,8 +3,8 @@
         <observer name="omise_data_assign" instance="Omise\Payment\Observer\CreditCardDataObserver" />
     </event>
 
-    <event name="payment_method_assign_data_omise_offsite_internetbanking">
-        <observer name="omise_data_assign" instance="Omise\Payment\Observer\InternetbankingDataAssignObserver" />
+    <event name="payment_method_assign_data_omise_cc_googlepay">
+        <observer name="omise_data_assign_googlepay" instance="Omise\Payment\Observer\CreditCardDataObserver" />
     </event>
 
     <event name="payment_method_assign_data_omise_offsite_installment">
@@ -23,11 +23,33 @@
         <observer name="omise_data_assign_fpx" instance="Omise\Payment\Observer\FpxDataAssignObserver" />
     </event>
 
+    <event name="payment_method_assign_data_omise_offsite_duitnowobw">
+        <observer name="omise_data_assign_dutinowobw" instance="Omise\Payment\Observer\DuitnowOBWDataAssignObserver" />
+    </event>
+
     <event name="payment_method_assign_data_omise_offline_conveniencestore">
         <observer name="omise_data_assign_conveniencestore" instance="Omise\Payment\Observer\ConveniencestoreDataAssignObserver" />
     </event>
 
+    <event name="payment_method_assign_data_omise_offsite_atome">
+        <observer name="omise_data_assign_atome" instance="Omise\Payment\Observer\AtomeDataAssignObserver" />
+    </event>
+
     <event name="sales_order_place_after">
         <observer name="omise_end_order" instance="Omise\Payment\Observer\PaymentCreationObserver" />
+    </event>
+
+    <!-- Webhook -->
+    <event name="omise_payment_webhook_charge_complete">
+        <observer name="omise_payment_webhook_charge_complete_observer" instance="Omise\Payment\Observer\WebhookObserver\WebhookCompleteObserver" />
+    </event>
+
+    <event name="omise_payment_webhook_refund_create">
+        <observer name="omise_payment_webhook_refund_create_observer" instance="Omise\Payment\Observer\WebhookObserver\WebhookRefundObserver" />
+    </event>
+
+    <!-- Webhook -->
+    <event name="omise_payment_webhook_charge_capture">
+        <observer name="omise_payment_webhook_charge_capture_observer" instance="Omise\Payment\Observer\WebhookObserver\WebhookCompleteObserver" />
     </event>
 </config>

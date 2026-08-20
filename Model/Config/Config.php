@@ -1,9 +1,13 @@
 <?php
+
 namespace Omise\Payment\Model\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface as MagentoScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface as MagentoScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Magento\Sales\Model\Order;
 
+#[\AllowDynamicProperties]
 class Config
 {
     /**
@@ -22,15 +26,42 @@ class Config
      * @var integer
      */
     private $storeId = null;
+    private $storeLocale = null;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
 
-    public function __construct(MagentoScopeConfigInterface $scopeConfig)
+    private $canInitialize = false;
+
+    public function __construct(MagentoScopeConfigInterface $scopeConfig, StoreManagerInterface $storeManager)
     {
         $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
+        $this->init();
+    }
+
+    private function init()
+    {
+        $storeId = $this->storeManager->getStore()->getId();
+        $localeCode =  $this->scopeConfig->getValue(
+            'general/locale/code',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+        $this->setStoreId($storeId);
+        $this->setStoreLocale($localeCode);
+
+        // Initialize only if both keys are present
+        if ($this->getPublicKey() && $this->getSecretKey()) {
+            $this->canInitialize = true;
+        }
+    }
+
+    public function canInitialize()
+    {
+        return $this->canInitialize;
     }
 
     /**
@@ -45,6 +76,22 @@ class Config
     }
 
     /**
+     * @return mixed
+     */
+    public function setStoreLocale($locale)
+    {
+        return $this->storeLocale = $locale;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStoreLocale()
+    {
+        return $this->storeLocale;
+    }
+
+    /**
      * @param  string $field
      * @param  string $code
      *
@@ -52,11 +99,12 @@ class Config
      */
     public function getValue($field, $code = self::CODE)
     {
-        return $this->scopeConfig->getValue(
+        $value = $this->scopeConfig->getValue(
             'payment/' . $code . '/' . $field,
             MagentoScopeInterface::SCOPE_STORE,
             $this->storeId ?? null
         );
+        return $value ? trim($value) : null;
     }
 
     /**
@@ -152,12 +200,32 @@ class Config
     }
 
     /**
+     * Check if using dynamic webhooks or not
+     *
+     * @return bool
+     */
+    public function isDynamicWebhooksEnabled()
+    {
+        return $this->isWebhookEnabled() && $this->getValue('dynamic_webhooks');
+    }
+
+    /**
      * Retrieve the order status in which to generate invoice at
      *
      * @return string
      */
     public function getSendInvoiceAtOrderStatus()
     {
-        return $this->getValue('generate_invoice_at_order_status');
+        $orderStatus = $this->getValue('generate_invoice_at_order_status');
+
+        // Previously, our default value of 'Generate invoice at order status' was
+        // '\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT'. So, this is for the
+        // merchants who have already installed our module so that they don't have
+        // to update the `Generate invoice at order status` setting
+        if ($orderStatus === '\Magento\Sales\Model\Order::STATE_PENDING_PAYMENT') {
+            return Order::STATE_PENDING_PAYMENT;
+        }
+
+        return $orderStatus;
     }
 }

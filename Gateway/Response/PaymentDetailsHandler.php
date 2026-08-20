@@ -63,6 +63,7 @@ class PaymentDetailsHandler implements HandlerInterface
         $payment->setAdditionalInformation('charge_id', $response['charge']->id);
         $payment->setAdditionalInformation('charge_authorize_uri', $response['charge']->authorize_uri);
         $payment->setAdditionalInformation('payment_type', $paymentType);
+        $payment->setAdditionalInformation('charge_expires_at', $response['charge']->expires_at);
 
         $transaction = $this->transactionBuilder
                             ->setPayment($payment)
@@ -75,7 +76,7 @@ class PaymentDetailsHandler implements HandlerInterface
             $transaction,
             $payment->prependMessage(
                 __(
-                    'Processing amount of %1 via Omise Payment Gateway.',
+                    'Processing amount of %1 via Omise Gateway.',
                     $order->getBaseCurrency()->formatTxt($order->getTotalDue())
                 )
             )

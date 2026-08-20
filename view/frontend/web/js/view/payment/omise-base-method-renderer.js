@@ -37,6 +37,15 @@ define(
             },
 
             /**
+             * Get payment method logo object
+             *
+             * @return {object || null}
+             */
+            getLogo: function() {
+                return this.logo
+            },
+
+            /**
              * Is method available to display
              *
              * @return {boolean}
@@ -82,15 +91,16 @@ define(
              *
              * @return {boolean}
              */
-             buildFailHandler(context) {
+            buildFailHandler(context, scrollTop = false) {
                 return function (response) {
+                    if (Number.isInteger(scrollTop)) {
+                        window.scrollTo({ top: scrollTop, behavior: 'smooth' })
+                    }
                     errorProcessor.process(response, context.messageContainer);
                     fullScreenLoader.stopLoader();
                     context.isPlaceOrderActionAllowed(true);
                 }
-             }
-
+            }
         };
-
     }
 );

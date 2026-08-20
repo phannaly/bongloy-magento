@@ -7,11 +7,12 @@ use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Payment\Helper\Formatter;
 use Magento\Sales\Model\Order\Payment;
 use Omise\Payment\Helper\OmiseHelper;
+use Omise\Payment\Helper\OmiseMoney;
 
 class RefundDataBuilder implements BuilderInterface
 {
     use Formatter;
-    
+
     /**
      * @var SubjectReader
      */
@@ -23,6 +24,11 @@ class RefundDataBuilder implements BuilderInterface
     protected $omiseHelper;
 
     /**
+     * @var OmiseMoney
+     */
+    protected $money;
+
+    /**
      * Constructor
      *
      * @param SubjectReader $subjectReader
@@ -30,10 +36,12 @@ class RefundDataBuilder implements BuilderInterface
      */
     public function __construct(
         SubjectReader $subjectReader,
-        OmiseHelper $omiseHelper
+        OmiseHelper $omiseHelper,
+        OmiseMoney $money
     ) {
         $this->subjectReader = $subjectReader;
         $this->omiseHelper = $omiseHelper;
+        $this->money = $money;
     }
 
     /**
@@ -48,14 +56,16 @@ class RefundDataBuilder implements BuilderInterface
 
         /** @var Payment $payment */
         $payment = $paymentDO->getPayment();
-        $order = $paymentDO->getOrder();
-        
+        $order = $payment->getOrder();
+        $amountToRefund = $this->subjectReader->readAmount($buildSubject);
+        $currency = $order->getBaseCurrencyCode();
         return [
+            'store_id' => $order->getStore()->getId(),
             'transaction_id' => $payment->getParentTransactionId(),
-            PaymentDataBuilder::AMOUNT => $this->omiseHelper->omiseAmountFormat(
-                $order->getCurrencyCode(),
-                $order->getGrandTotalAmount()
-            )
+            PaymentDataBuilder::AMOUNT => $this->money->setAmountAndCurrency(
+                $amountToRefund,
+                $currency
+            )->toSubunit(),
         ];
     }
 }

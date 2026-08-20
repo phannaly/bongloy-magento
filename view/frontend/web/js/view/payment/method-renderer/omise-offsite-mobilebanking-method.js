@@ -1,60 +1,72 @@
 define(
     [
+        'jquery',
         'ko',
         'Omise_Payment/js/view/payment/omise-offsite-method-renderer',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/quote',
     ],
     function (
+        $,
         ko,
         Base,
         Component,
         quote
     ) {
         'use strict';
+
+        const providers = [
+            {
+                id: "mobile_banking_kbank",
+                title: $.mage.__('K PLUS'),
+                code: 'kbank',
+                logo: 'kbank',
+                currencies: ['thb'],
+                active: true
+            },
+            {
+                id: "mobile_banking_scb",
+                title: $.mage.__('SCB EASY'),
+                code: 'scb',
+                logo: 'scb',
+                currencies: ['thb'],
+                active: true
+            },
+            {
+                id: "mobile_banking_bay",
+                title: $.mage.__('KMA'),
+                code: 'bay',
+                logo: 'bay',
+                currencies: ['thb'],
+                active: true
+            },
+            {
+                id: "mobile_banking_bbl",
+                title: $.mage.__('Bualuang mBanking'),
+                code: 'bbl',
+                logo: 'bbl',
+                currencies: ['thb'],
+                active: true
+            },
+            {
+                id: "mobile_banking_ktb",
+                title: $.mage.__('Krungthai NEXT'),
+                code: 'ktb',
+                logo: 'ktb',
+                currencies: ['thb'],
+                active: true
+            },
+        ]
+
         return Component.extend(Base).extend({
             defaults: {
                 template: 'Omise_Payment/payment/offsite-mobilebanking-form'
             },
 
             isPlaceOrderActionAllowed: ko.observable(quote.billingAddress() != null),
-
             code: 'omise_offsite_mobilebanking',
-            restrictedToCurrencies: ['thb', 'sgd'],
-            providers: [
-                {
-                    id: "mobile_banking_kbank",
-                    title: 'K PLUS',
-                    code: 'kbank',
-                    logo: 'kbank',
-                    currencies: ['thb'],
-                    active: false
-                },
-                {
-                    id: "mobile_banking_scb",
-                    title: 'SCB EASY',
-                    code: 'scb',
-                    logo: 'scb',
-                    currencies: ['thb'],
-                    active: true
-                },
-                {
-                    id: "mobile_banking_bay",
-                    title: 'KMA',
-                    code: 'bay',
-                    logo: 'bay',
-                    currencies: ['thb'],
-                    active: false
-                },
-                {
-                    id: "mobile_banking_ocbc_pao",
-                    title: 'OCBC Pay Anyone',
-                    code: 'ocbc_pao',
-                    logo: 'ocbc_pao',
-                    currencies: ['sgd'],
-                    active: true
-                },
-            ],
+            restrictedToCurrencies: ['thb'],
+            capability: null,
 
             /**
             * Initiate observable fields
@@ -66,6 +78,8 @@ define(
                     .observe([
                         'omiseOffsite'
                     ]);
+
+                this.capability = checkoutConfig.omise_payment_list[this.code];
 
                 // filter provider for checkout page
                 this.providers = this.get_available_providers()
@@ -97,22 +111,25 @@ define(
             },
 
             /**
-            * Get a provider list form capabilities api and filter only support type
+            * Get a provider list from capability api and filter only support type
             *
             * @return {Array}
             */
             get_available_providers: function () {
-                let _providers = Object.values(window.checkoutConfig.mobile_banking);
+                let _providers = Object.values(this.capability);
+                const filteredProviders = [];
 
-                return this.providers.filter((a1) => _providers.find(a2 => {
-                    if (a1.id === a2._id) {
-                        // set currencies from api if is undefined use default value
-                        if (a2?.currencies !== null) {
-                            a1.currencies = a2.currencies
+                for (const a1 of providers) {
+                    for (const a2 of _providers) {
+                        if (a1.id === a2.name) {
+                            a1.currencies = (a2?.currencies || []).map(c => c.toLowerCase());
+                            filteredProviders.push(a1);
+                            break;
                         }
-                        return true
                     }
-                }))
+                }
+
+                return ko.observableArray(filteredProviders);
             }
 
         });
